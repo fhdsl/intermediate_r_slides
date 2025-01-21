@@ -19,6 +19,11 @@ output-location: fragment
 
 ![](images/Intro_To_R_2.png){width="300"} ![](images/Intermediate_R_draft.png){width="375"}
 
+```{r}
+#| echo: false
+library(countdown)
+```
+
 ```{webr}
 #| edit: false
 #| echo: false
@@ -37,24 +42,19 @@ library(palmerpenguins)
 
 . . .
 
--   Who are you?
+-   Who are you? (Share in chat or with your neighbor)
 
     -   Name, pronouns, group you work in
     -   What you want to get out of the class
     -   Favorite spring activity
 
+`r countdown(minutes=3)`
+
 ## Goals of the course
 
-. . .
-
--   Continue building **programming fundamentals**: *How to use complex data structures, use and create custom functions, and how to iterate repeated tasks using tools in the `tidyverse`.*
-
-. . .
-
--   Continue exploration of **data science fundamentals**: *How to clean messy data to a Tidy form for analysis using tools in the `tidyverse`.*
-
-. . .
-
+- **Apply** tools for Tidying data to get a messy dataset into analysis-ready form, via data recoding, data transformations, and data subsetting.
+- **Design** and **Create** simple, custom functions that can be reused throughout an analysis on multiple datasets.
+- **Explain** and **utilize** *iteration* in programming to reduce repeated code and batch process collections (such as a folder of files or rows in a table)
 -   At the end of the course, you will be able to: conduct a full analysis in the data science workflow (minus model).
 
     ![Data science workflow](https://d33wubrfki0l68.cloudfront.net/571b056757d68e6df81a3e3853f54d3c76ad6efc/32d37/diagrams/data-science.png){width="550"}
@@ -73,26 +73,31 @@ library(palmerpenguins)
 
 . . .
 
--   Respect Code of Conduct
+-   Respect [Participation Guidelines](https://hutchdatascience.org/communitystudios/guidelines/)
 
 ## Format of the course
 
-. . .
+-   Wednesdays at 12-1:30 PM
 -   6 classes: Jan 22, 29, Feb. 5, 12, 26, Mar 6
 -   **No class during Public School Week**
 
 . . .
 
+First 20 minutes of class is dedicated to catching up (last week's exercises)
+
+. . .
+
 -   Streamed online and in person, recordings will be available.
 -   Announcements via Teams Classroom and by Google Doc
+
 . . .
 
 -   1-2 hour exercises after each session are strongly encouraged as they provide practice.
--   Optional time to work on exercises together on Fridays Noon - 1pm PT.
+-   Optional time to work on exercises together on Fridays 10 - 11 AM PST.
 
 . . .
 
--   Online discussion via Slack.
+-   Online discussion via Teams Space.
 
 ## Content of the course
 
@@ -116,19 +121,47 @@ library(palmerpenguins)
 
 # Ask me two questions
 
-# Set up Posit Cloud and look at our workspace!
-
-## Break
+## Break (5 minutes)
 
 A pre-course survey:
 
-https://forms.gle/aLXyQor4WS5mTKMV6
+<https://forms.gle/4ouiHhP8Hbf25L9w5>
 
-## Note
+```{r}
+countdown::countdown(minutes=5)
+```
 
-- We'll do exercises live in the slides
-- they are mirrored in your workspaces as `classwork`
-- Exercises in your projects
+# Set up Posit Cloud and look at our workspace!
+
+## Before we get started
+
+- We'll do in-class exercises live in the slides
+  - These slides actually run R on your computer!
+- they are mirrored in your workspaces as `classwork` 
+  - You can do them there if you want to keep a record
+- Exercises are in your projects
+
+## Exercise Example
+
+Make a vector with the following values: 3, 5, 10. Assign it to an object called `people`. Show the contents of `people`.
+
+```{webr}
+#| exercise: ex_1
+people <- c(--,--,--)
+people
+```
+
+::: {.solution exercise="ex_1"}
+
+#### Solution
+
+```{webr}
+#| exercise: ex_1
+#| solution: true
+people <- c(3,5,10)
+people
+```
+:::
 
 ## Data types in R
 
@@ -148,9 +181,9 @@ https://forms.gle/aLXyQor4WS5mTKMV6
 
 ## Data structures in R
 
--   Vector
--   Dataframe
--   List
+-   `vector`
+-   `data.frame`
+-   `list`
 
 ## Vectors
 
@@ -168,7 +201,7 @@ Within the Numeric type that we are familiar with, there are more specific types
 fib = c(0, 1, 1, NA, 5)
 ```
 
-## Testing and Coercing
+## Testing
 
 We can test whether a vector is a certain type with `is.___()` functions, such as `is.character()`.
 
@@ -184,7 +217,7 @@ For `NA`, the test will return a vector testing each element, because `NA` can b
 is.na(c(34, NA))
 ```
 
-. . .
+## Coercing
 
 We can **coerce** vectors from one type to the other with `as.___()` functions, such as `as.numeric()`
 
@@ -218,7 +251,7 @@ x
 x["a"]
 ```
 
-. . .
+## `attributes()`
 
 We can look for more general attributes via the `attributes()` function:
 
@@ -226,7 +259,7 @@ We can look for more general attributes via the `attributes()` function:
 attributes(x)
 ```
 
-## Ways to subset a vector
+## Review: ways to subset a vector
 
 ```{r}
 data = c(2, 4, -1, -3, 2, -1, 10)
@@ -270,7 +303,9 @@ data < 0
 data[data < 0]
 ```
 
-## Try it Out: Vectors 1
+## Try it out: Vectors 1 (5 minutes, go as far as you can...)
+
+`r countdown(minutes=5)`
 
 1.  How do you subset the following vector so that it only has positive values?
 
@@ -340,9 +375,9 @@ vec_with_NA[!is.na(vec_with_NA)]
 
 
 
-## Dataframes
+## `data.frame`
 
-Usually, we load in a dataframe from a spreadsheet or a package.
+Usually, we load in a `data.frame` from a spreadsheet or a package.
 
 ```{r, message=F, warning=F}
 library(tidyverse)
@@ -352,7 +387,7 @@ head(penguins)
 
 . . .
 
-Let's take a look at a dataframe's **attributes**.
+Let's take a look at a `data.frame`'s **attributes**.
 
 ```{r, message=F, warning=F}
 attributes(penguins)
@@ -360,13 +395,15 @@ attributes(penguins)
 
 . . .
 
-So, we can access the column names of the dataframe via `names()`:
+So, we can access the column names of the `data.frame` via `names()`:
 
 ```{r}
 names(penguins)
 ```
 
-## Try it out: Subsetting dataframes 1
+## Try it out: Subsetting `data.frame`s 1 (5 minutes, go as far as you can)
+
+`r countdown(minutes=5)``
 
 *Subset to the single column `bill_length_mm`:*
 
@@ -389,7 +426,7 @@ penguins[["bill_length_mm"]]
 :::
 
 
-## Subsetting dataframes 2
+## Subsetting `data.frame`s 2
 
 *I want to select columns `bill_length_mm`, `bill_depth_mm`, `species`, and filter the rows so that `species` only has "Gentoo":*
 
@@ -414,7 +451,7 @@ penguins |>
 :::
 
 
-## Subsetting dataframes 3
+## Subsetting `data.frame`s 3
 
 *Challenge: I want to filter out rows that have `NA`s in the column `bill_length_mm`:*
 
@@ -453,7 +490,7 @@ l1 = list(
 
 ![](https://d33wubrfki0l68.cloudfront.net/9628eed602df6fd55d9bced4fba0a5a85d93db8a/36c16/diagrams/vectors/list.png)
 
-. . .
+## Lists 2
 
 Unlike vectors, you access the elements of a list via the double bracket `[[]]`. (You will access a smaller list with single bracket `[]`.)
 
@@ -488,6 +525,7 @@ And access named elements of lists via the `[[]]` or `$` operation:
 
 ```{r}
 l1[["score"]]
+# or
 l1$score
 ```
 
@@ -507,6 +545,8 @@ This always trips me up, you usually want `[[]]` (return an element) versus `[]`
 l1["ranking"]
 ```
 
+...
+
 ```{r}
 l1[["ranking"]]
 ```
@@ -515,10 +555,15 @@ l1[["ranking"]]
 
 1. Return a mixed type list of objects, such as from running `lm()` - a lot of methods in R use this.
   - Useful when programming functions
+  
+. . .  
+  
 2. Store multiple instances of the same data type, such as a `list` of `data.frame`s
   - Iteration over lists
   
-## Try it Out:
+## Try it Out: Lists 1
+
+`r countdown(minutes=5)`
 
 Return the element in the `id` slot:
 
@@ -534,9 +579,12 @@ person
 #| solution: true
 person = list(id=100031, age=40)
 person$id
+# or
 person[["id"]]
 ```
 :::
+
+## Lists 2
 
 Return the 2nd element of this list:
 
@@ -557,9 +605,38 @@ new_list[[2]]
 
 :::
 
-## Dataframes as Lists
+## Lists 3: Using Variables to Subset
 
-A dataframe is just a named list of vectors of same length with **attributes** of (column) `names` and `row.names`, so all of the list methods we looked at above apply.
+How would you use the value of the `my_col` variable to subset the list?
+
+```{webr}
+#| exercise: list_3
+person = list(id=100031, age=40)
+my_col <- "age"
+person
+```
+
+::: {.solution exercise="list_3"}
+
+#### Solution
+
+This is the main use for the `[[]]` - you can pass it a variable name.
+
+Note that `person$my_col` is not going to work - it looks for a column called `my_col` in the data.
+
+```{webr}
+#| exercise: list_3
+#| solution: true
+person = list(id=100031, age=40)
+my_col <- "age"
+person[[my_col]]
+```
+:::
+
+
+## `data.frame`s as Lists
+
+A `data.frame` is just a named list of vectors of same length with **attributes** of (column) `names` and `row.names`, so all of the list methods we looked at above apply.
 
 . . .
 
@@ -567,7 +644,7 @@ A dataframe is just a named list of vectors of same length with **attributes** o
 head(penguins)
 ```
 
-. . .
+## `data.frame`s as Lists
 
 ```{r}
 head(penguins[[3]])
@@ -577,7 +654,7 @@ head(penguins[["bill_length_mm"]])
 
 # Everything in R is a List, or based on one
 
-## Tidyverse tools for lists
+## Tools for lists
 
 - `lapply()` function - applies a function to each element of a list
 - We'll explore in Week 5 the `{purrr}` package, which has methods for working with lists
