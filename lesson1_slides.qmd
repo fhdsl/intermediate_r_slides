@@ -7,6 +7,7 @@ format:
     scrollable: true
     echo: true
     embed-resources: true
+    footer: <https://bit.ly/intr_wk1>
     drop:
       engine: webr
       button: true
@@ -385,7 +386,7 @@ library(palmerpenguins)
 head(penguins)
 ```
 
-. . .
+## `data.frame` attributes
 
 Let's take a look at a `data.frame`'s **attributes**.
 
