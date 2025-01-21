@@ -112,7 +112,16 @@ First 20 minutes of class is dedicated to catching up (last week's exercises)
 |5|Feb 26*|Iterating/Repeating Tasks|
 |6|Mar 6*|Overflow/Celebratory Lunch|
 
+[Schedule/Cheatsheet](https://docs.google.com/document/d/15vx3SPvHyJMvogbMuBd-Mdc7CHAdrcfs89ubcH8JYL0/edit?usp=sharing)
+
 *Ted on Campus
+
+## Post-Class Survey
+
+- Fill out the [post-class survey](https://forms.gle/5ZebFzyPDRg2Ep1s6)
+- Will discuss weekly
+- Your opportunity for feedback/needs
+
 
 ## Office Hours
 
@@ -128,9 +137,9 @@ A pre-course survey:
 
 <https://forms.gle/4ouiHhP8Hbf25L9w5>
 
-```{r}
-countdown::countdown(minutes=5)
-```
+
+`r countdown::countdown(minutes=5)`
+
 
 # Set up Posit Cloud and look at our workspace!
 
