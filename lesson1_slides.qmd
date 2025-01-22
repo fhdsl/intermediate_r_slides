@@ -41,13 +41,13 @@ library(palmerpenguins)
 
 -   What is DaSL?
 
-. . .
+## Introductions
 
 -   Who are you? (Share in chat or with your neighbor)
 
     -   Name, pronouns, group you work in
     -   What you want to get out of the class
-    -   Favorite spring activity
+    -   Favorite winter activity
 
 `r countdown(minutes=3)`
 
@@ -112,7 +112,7 @@ We ask you to follow [Participation Guidelines](https://hutchdatascience.org/com
 
 -   1-2 hour exercises after each session are strongly encouraged as they provide practice.
 -   Optional time to work on exercises together on Fridays 10 - 11 AM PST.
-
+-   I will have solution videos available on Monday morning after class (see cheatsheet)
 . . .
 
 -   Online discussion via Teams Space.
@@ -135,7 +135,7 @@ We ask you to follow [Participation Guidelines](https://hutchdatascience.org/com
 
 ## Post-Class Survey
 
-- Fill out the [post-class survey](https://forms.gle/5ZebFzyPDRg2Ep1s6)
+- Fill out the [post-class survey](https://forms.gle/5ZebFzyPDRg2Ep1s6) weekly
 - Will discuss weekly
 - Your opportunity for feedback/needs
 
@@ -214,21 +214,24 @@ people
 
 ## Vectors
 
-A **vector** contains a data type, and all elements must be the same data type. We can have **logical vectors, numerical vectors**, etc.
+::::{.columns}
+:::{.column width="60%"}
+- A **vector** contains a data type, and all elements must be the same data type. We can have **logical vectors, numerical vectors**, etc.
 
-![](https://d33wubrfki0l68.cloudfront.net/eb6730b841e32292d9ff36b33a590e24b6221f43/57192/diagrams/vectors/summary-tree-atomic.png){width="300"}
+- Within the Numeric type that we are familiar with, there are more specific types: **Integer vectors** consists of whole number values, and **Double vectors** consists of decimal values
 
-. . .
-
-Within the Numeric type that we are familiar with, there are more specific types: **Integer vectors** consists of whole number values, and **Double vectors** consists of decimal values.
-
-. . .
-
-```{r}
+```r
 fib = c(0, 1, 1, NA, 5)
 ```
+:::
 
-## Testing
+:::{.column width="40%"}
+![](https://d33wubrfki0l68.cloudfront.net/eb6730b841e32292d9ff36b33a590e24b6221f43/57192/diagrams/vectors/summary-tree-atomic.png){width="300"}
+:::
+::::
+
+
+## Testing for a data type
 
 We can test whether a vector is a certain type with `is.___()` functions, such as `is.character()`.
 
@@ -286,7 +289,9 @@ We can look for more general attributes via the `attributes()` function:
 attributes(x)
 ```
 
-## Review: ways to subset a vector
+## Review: explicit subsetting
+
+- We know the indices for our subset, such as "The first two values"
 
 ```{r}
 data = c(2, 4, -1, -3, 2, -1, 10)
@@ -305,7 +310,7 @@ data = c(2, 4, -1, -3, 2, -1, 10)
 2.  Negative numeric vector performs *exclusion* 
 
     ```{r}
-    data[-1]
+    data[c(-1, -2)]
     ```
 
 . . .
@@ -316,7 +321,7 @@ data = c(2, 4, -1, -3, 2, -1, 10)
 data[c(TRUE, TRUE, FALSE, FALSE, FALSE, FALSE, TRUE)]
 ```
 
-. . .
+## Review: Implicit subsetting
 
 Comparison operators, such as `>`, `<=`, `==`, `!=`, create logical vectors for subsetting.
 
@@ -422,7 +427,7 @@ attributes(penguins)
 
 . . .
 
-So, we can access the column names of the `data.frame` via `names()`:
+So, we can access the column names of the `data.frame` via `names()` instead of `colnames()`:
 
 ```{r}
 names(penguins)
@@ -506,7 +511,7 @@ Lists operate similarly as vectors as they group data into one dimension, but ea
 
 ```{r}
 l1 = list(
-  1:3, 
+  c(1:3), 
   "a", 
   c(TRUE, FALSE, TRUE), 
   c(2.3, 5.9)
@@ -520,6 +525,15 @@ l1 = list(
 ## Lists 2
 
 Unlike vectors, you access the elements of a list via the double bracket `[[]]`. (You will access a smaller list with single bracket `[]`.)
+
+```{r}
+l1 = list(
+  c(1:3), 
+  "a", 
+  c(TRUE, FALSE, TRUE), 
+  c(2.3, 5.9)
+)
+```
 
 ```{r}
 l1[[1]]
@@ -537,7 +551,7 @@ We can give **names** to lists:
 
 ```{r}
 l1 = list(
-  ranking = 1:3, 
+  ranking = c(1:3), 
   name = "a", 
   success =  c(TRUE, FALSE, TRUE), 
   score = c(2.3, 5.9)
@@ -581,12 +595,12 @@ l1[["ranking"]]
 ## Two main uses for Lists
 
 1. Return a mixed type list of objects, such as from running `lm()` - a lot of methods in R use this.
-  - Useful when programming functions
+  - Useful when programming functions that need to return multiple objects
   
 . . .  
   
 2. Store multiple instances of the same data type, such as a `list` of `data.frame`s
-  - Iteration over lists
+  - Iteration over these lists is possible
   
 ## Try it Out: Lists 1
 
@@ -679,7 +693,7 @@ head(penguins$bill_length_mm)
 head(penguins[["bill_length_mm"]])
 ```
 
-# Everything in R is a List, or based on one
+# Everything in R is a List, or related
 
 ## Tools for lists
 
@@ -689,4 +703,4 @@ head(penguins[["bill_length_mm"]])
 
 ## That's all!
 
-Maybe see you Friday 10 - 11 AM PST to practice together!
+Office Hours Friday 10 - 11 AM PST to practice together!
