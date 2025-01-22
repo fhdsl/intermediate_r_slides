@@ -156,7 +156,6 @@ A pre-course survey:
 
 <https://forms.gle/4ouiHhP8Hbf25L9w5>
 
-
 `r countdown::countdown(minutes=5)`
 
 
@@ -194,15 +193,15 @@ people
 
 ## Data types in R
 
--   Numeric: 18, -21, 65, 1.25
+-   Numeric: `18`, `-21`, `65`, `1.25`
 
 . . .
 
--   Character: "ATCG", "Whatever", "948-293-0000"
+-   Character: `"ATCG"`, `"Whatever"`, `"948-293-0000"`
 
 . . .
 
--   Logical: TRUE, FALSE
+-   Logical: `TRUE`, `FALSE`
 
 . . .
 
@@ -263,6 +262,14 @@ as.numeric(c("23", "45"))
 as.numeric(c(TRUE, FALSE))
 ```
 
+## Try it out
+
+What is the output if we use `as.character()` on `c(TRUE, FALSE)`?
+
+```{webr}
+as.character(c(TRUE, FALSE))
+```
+
 ## Attributes of data structures
 
 It is common to have metadata **attributes**, such as **names**, attached to R data structures.
@@ -275,7 +282,7 @@ x
 
 . . .
 
-![](https://d33wubrfki0l68.cloudfront.net/1140c34226b3b04438aec65c8fc6b28758d8c091/1748a/diagrams/vectors/attr-names-2.png)
+![](images/attr-names-2.png)
 
 . . .
 
@@ -522,7 +529,7 @@ l1 = list(
 
 . . .
 
-![](https://d33wubrfki0l68.cloudfront.net/9628eed602df6fd55d9bced4fba0a5a85d93db8a/36c16/diagrams/vectors/list.png)
+![](images/list.png)
 
 ## Lists 2
 
@@ -539,12 +546,6 @@ l1 = list(
 
 ```{r}
 l1[[1]]
-```
-
-. . .
-
-```{r}
-l1[[1]][2]
 ```
 
 ## List names
@@ -589,6 +590,8 @@ l1["ranking"]
 ```
 
 ...
+
+You almost always want to use `[[]]`
 
 ```{r}
 l1[["ranking"]]
