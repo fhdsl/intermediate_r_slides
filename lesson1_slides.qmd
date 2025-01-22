@@ -72,9 +72,26 @@ library(palmerpenguins)
 
 -   Various personal goals and applications: curate applications based on your interest!
 
+## Culture of the course
+
+-   Challenge: We sometimes struggle with our data science in isolation, unaware that someone two doors down from us has gone through the same struggle.
+
 . . .
 
--   Respect [Participation Guidelines](https://hutchdatascience.org/communitystudios/guidelines/)
+-   *We learn and work better with our peers.*
+
+. . .
+
+-   *Know that if you have a question, other people will have it.*
+
+. . .
+
+-   *Asking questions is our way of taking care of others.*
+
+. . .
+
+We ask you to follow [Participation Guidelines](https://hutchdatascience.org/communitystudios/guidelines/) and [Code of Conduct](https://github.com/fhdsl/coc).
+
 
 ## Format of the course
 
@@ -84,7 +101,7 @@ library(palmerpenguins)
 
 . . .
 
-First 20 minutes of class is dedicated to catching up (last week's exercises)
+-   First 20-30 minutes of class is dedicated to catching up (with last week's exercises)
 
 . . .
 
@@ -141,7 +158,7 @@ A pre-course survey:
 `r countdown::countdown(minutes=5)`
 
 
-# Set up Posit Cloud and look at our workspace!
+# Set up Posit Cloud and [look at our workspace](https://posit.cloud/spaces/602402/join?access_code=UKlpCyHA04T-B9GXuGoJdJXV-b0o2yGVFDA9d_WC)!
 
 ## Before we get started
 
