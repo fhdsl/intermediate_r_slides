@@ -16,6 +16,8 @@ output-location: fragment
 
 {{< include ./_extensions/r-wasm/live/_knitr.qmd >}}
 
+# Remember to Hit Record in Teams
+
 ## Welcome!
 
 ![](images/Intro_To_R_2.png){width="300"} ![](images/Intermediate_R_draft.png){width="375"}
