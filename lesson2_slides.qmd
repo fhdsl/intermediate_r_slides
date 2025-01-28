@@ -1,0 +1,660 @@
+---
+title: "W2: Data Cleaning 1"
+format: 
+  live-revealjs:
+    df-print: paged
+    smaller: true
+    scrollable: true
+    echo: true
+    embed-resources: true
+    footer: <https://bit.ly/intr_wk2>
+    drop:
+      engine: webr
+      button: true
+webr:
+  render-df: paged-table
+output-location: fragment
+---
+
+{{< include ./_extensions/r-wasm/live/_knitr.qmd >}}
+
+# Remember to Hit Record in Teams
+
+```{r, echo=F, message=F, warning=F}
+#| echo: false
+library(tidyverse)
+library(palmerpenguins)
+library(countdown)
+```
+
+```{webr}
+#| echo: false
+library(tidyverse)
+library(palmerpenguins)
+```
+
+
+# Catch Up on Exercises (20 Minutes)
+
+`r countdown(minutes=20)`
+
+## This week
+
+- Review of `mutate()`
+- `case_when()`
+- `across()`
+- `tidyselect` (if there is time)
+
+## Review of `mutate`
+
+## Modifying and creating new columns
+
+The `mutate()` function takes in the following arguments: the first argument is the dataframe of interest, and the second argument is a *new or existing data variable* that is defined in terms of *other data variables*.
+
+I think of them like formulas in Excel.
+. . .
+
+```{r}
+#| eval: false
+metadata |>
+  select(ModelID, Age) |>
+  head()
+```
+
+. . .
+
+```{r}
+#| eval: false
+metadata2 <- metadata |>
+              mutate(olderAge = Age + 10) 
+metadata2
+```
+
+## Try it Out 
+
+Try calcluating a new variable in `penguins` called `body_mass_kg` by dividing `body_mass_g` by 1000. 
+
+Confirm your conversion was correct by comparing `body_mass_g` and `body_mass_kg`.
+
+```{webr}
+#| exercise: mutate1
+penguins_new <- penguins |>
+  mutate(body_mass_kg = -------- / 1000) 
+
+head(penguins_new)
+```
+
+::: {.solution exercise="mutate1"}
+
+#### Solution
+
+```{webr}
+#| exercise: mutate1
+#| solution: true
+penguins_new <- penguins |>
+  mutate(body_mass_kg = body_mass_g / 1000) 
+
+head(penguins_new)
+```
+:::
+
+## Recoding Variables
+
+![](images/case_when.png)
+
+## Recoding Data
+
+Say we want to convert our `body_mass_g` column into a categorical column.
+
+With the criteria:
+
+- 4000 or smaller, we want to call "small"
+- Greater than 4000, we want ot call "medium"
+
+We can write our criteria as follows:
+
+```
+body_mass_g <= 4000 ~ "small", # if body_mass_g is less 
+                               # than or equal to 4000 return "small"
+body_mass_g > 4000 ~ "large". # if greater than 4000 return "large"
+```
+
+## Plugging in our criteria
+
+We can use these criteria directly in a `case_when()` within a `mutate()`
+
+Here we are defining a new variable called `size` in our dataset:
+
+```{r}
+penguins |> head(10) |>
+  select(species, island, body_mass_g) |>
+  mutate(size = case_when(
+    body_mass_g <= 4000 ~ "small",
+    body_mass_g > 4000 ~ "large"
+  ))
+```
+
+## Question
+
+What happens to the `NA` values in the `body_mass_g` column? What are they transformed to?
+
+```{webr}
+penguins |> head(10) |>
+  select(species, island, body_mass_g) |>
+  mutate(size = case_when(
+    body_mass_g <= 4000 ~ "small",
+    body_mass_g > 4000 ~ "large"
+  ))
+```
+
+## More criteria
+
+With the criteria:
+
+- 3500 or smaller, we want to call "small"
+- Between 3501 and 4000, we want to call "medium"
+- Greater than 4000, we want to call "large"
+
+For medium, we need to chain two comparisons:
+
+```
+body_mass_g > 3500 & body_mass_g < 4000 ~ "medium"
+```
+
+Here we're combining two comparisons with the `&` operator.
+
+## Plug it in, Plug it in (sorry Glade)
+
+```{r}
+penguins |>
+  select(species, island, body_mass_g) |>
+  mutate(size = case_when(
+    body_mass_g < 3500 ~ "small",
+    body_mass_g > 3500 & body_mass_g < 4000 ~ "medium",
+    body_mass_g > 4000 ~ "large",
+    TRUE ~ NA
+  ))
+```
+
+## What's up with `TRUE ~ NA`?
+
+This is what's known as a catchall category. If our values meet none of the above criteria, then we code it as `NA`
+
+This is super helpful when our criteria are not completely inclusive - there was a subset of values that were missed.
+
+If you don't like that, you can pass the additional `.default` argument instead:
+
+```{r}
+penguins |>
+  select(species, island, body_mass_g) |>
+  mutate(size = case_when(
+    body_mass_g < 3500 ~ "small",
+    body_mass_g > 3500 & body_mass_g < 4000 ~ "medium",
+    body_mass_g > 4000 ~ "large",
+    .default = NA
+  ))
+```
+
+## Try it Out
+
+Try to implement the following criteria for `flipper_length_mm`, making a new variable `flipper_size`:
+
+- If `flipper_length_mm` is less than 190, code as "little"
+- If `flipper_length_mm` is greater than or equal to 190, code as "big"
+- NA otherwise
+
+```{webr}
+#| exercise: case_when2
+penguins |>
+  mutate(flipper_size = case_when(
+    ------ ~ "little",
+    ------ ~ "big",
+    TRUE ~ -----
+  ))
+```
+
+::: {.solution exercise="case_when2"}
+
+#### Solution
+
+```{webr}
+#| exercise: case_when2
+#| solution: true
+penguins |>
+  mutate(flipper_size = case_when(
+    flipper_length_mm < 190 ~ "little",
+    flipper_length_mm >= 190 ~ "big",
+    TRUE ~ NA
+  ))
+```
+:::
+
+
+## Recoding Data / Conditionals
+
+`case_when()` uses what are called *nested conditionals* - we evaluate them going down the list until we go through all conditions.
+
+For example, for this code, we first evaluate:
+
+```
+ flipper_length_mm < 190
+```
+
+And then we evaluate for the remaining values:
+
+```
+ flipper_length_mm >= 190
+```
+
+And then we evaluate anything that doesn't meet the above conditions.
+
+## How to do it in Base-R:
+
+```{webr}
+penguins$size = NA
+penguins[penguins$flipper_length_mm < 190, "size"] ~ "little"
+penguins[penguins$flipper_length_mm >= 190, "size"] ~ "big"
+```
+
+
+## Conditionals
+
+`case_when()` in recoding data is closely tied to the concept of **conditionals** in programming: *given certain conditions, you run a specific code chunk.*
+
+```         
+if(expression_is_TRUE) {
+  #code goes here
+}
+```
+
+. . .
+
+```         
+if(expression_A_is_TRUE) {
+  #code goes here
+}else if(expression_B_is_TRUE) {
+  #other code goes here
+}else {
+  #some other code goes here
+}
+```
+
+. . .
+
+```{r}
+#if()
+
+```
+
+
+# `mutate(across())`
+
+## `mutate(across())` apply a function to multiple columns
+
+![](images/across.png)
+
+## Use `mutate(across())` to do something to multiple columns
+
+`across()` is a function in `dplyr` 1.0 that lets you specify a set of columns that uses a set of criteria. If there is one pattern that makes your life easier, it is `across`.
+
+## Round all numeric columns
+
+The basic syntax:
+
+```
+mutate(
+  across(c(bill_length_mm, bill_depth_mm), # Columns to mutate
+         round)                            # the function we want to apply
+)                  
+```
+
+```{r}
+penguins |>
+  mutate(
+    across(c(bill_length_mm, bill_depth_mm), round)
+  )
+```
+
+## This always trips me up
+
+Notice that the function in the second argument has no `()`:
+
+```
+across(c(bill_length_mm, bill_depth_mm), round)
+```
+
+Instead of:
+
+```
+across(c(bill_length_mm, bill_depth_mm), round())
+```
+
+## What kind of functions work here?
+
+- Any function that works on a vector
+- The first argument must be the vector
+- We can supply extra arguments by putting them after our function:
+
+```
+across(c(bill_length_mm, bill_depth_mm), round, digits=3)
+```
+
+## Exercise: Selecting Columns
+
+Try converting the `species` and `island` columns to uppercase using `toupper()`
+
+```{webr}
+#| exercise: across2
+penguins |>
+  mutate(across(c(----,----), toupper))
+```
+
+::: {.solution exercise="across2"}
+
+#### Solution
+
+```{webr}
+#| exercise: across2
+#| solution: true
+penguins |>
+  mutate(across(c(species,island), toupper))
+```
+:::
+
+
+## Remember our tests?
+
+- `is.numeric`
+- `is.double`
+- `is.integer`
+- `is.character`
+
+We can use them to select columns to `mutate(across())`! 
+
+We just need to wrap them in `where()`:
+
+```
+across(where(is.double))
+```
+
+Let's apply the `round()` function to columns that are `double`:
+
+```{r}
+penguins |>
+  mutate(across(where(is.double), round))
+```
+
+### Exercise:
+
+Use `mutate(across())` to change everything that is a `factor` in `penguins` to upper case using `toupper`. 
+
+```{webr}
+#| exercise: across_1
+penguins %>%
+  mutate(across(where(is.factor), ------))
+```
+
+
+::: {.solution exercise="across_1"}
+
+#### Solution
+
+```{webr}
+#| exercise: across_1
+#| solution: true
+
+penguins %>%
+  mutate(across(where(is.factor), toupper))
+```
+:::
+
+## `tidyselect`
+
+We passed in bare column names and used `where()` to select columns.
+
+There is a whole set of functions that let us select columns:
+
+|Function|What it selects|
+|--------|---------------|
+|`everything()`|all variables|
+|`starts_with("a")`|selects variables that start with `"a"`|
+|`ends_with("b")` | selects variables that end with `"b"`|
+|`contains("c")`| selects variables that contain `"c"`|
+|`any_of(c("island", "species"))` |selects all variables in the vector|
+
+You can also negate these with a `!` such as
+
+```
+!starts_with("a")   #selects all variables that do NOT start with "a"
+```
+
+## Applying `tidyselect`
+
+```{r}
+penguins |>
+  mutate(across(
+    starts_with("flipper"),
+    as.character))
+```
+
+## Exercise 3
+
+Use `mutate(across)` to apply `round` to measurements that `starts_with("bill")` 
+
+```{webr}
+#| exercise: across3
+penguins |>
+  mutate(
+    across(--------,
+      round
+  ))
+```
+
+::: {.solution exercise="across3"}
+
+#### Solution
+
+```{webr}
+#| exercise: across3
+#| solution: true
+penguins |>
+  mutate(
+    across(starts_with("bill"),
+      round
+  ))
+```
+:::
+
+# Writing Functions (intro)
+
+## Using our own functions in `mutate(across())`
+
+Let's define a simple function called square:
+
+```{r}
+square = function(x) {
+  x * x
+}
+```
+
+## Try it out!
+
+What do you expect when we apply it to a vector?
+
+```{webr}
+square = function(x) {
+  x * x
+}
+
+square(c(1,2,3))
+```
+
+## Why it's good to use named arguments
+
+If we use named arguments, we're able to change the order of arguments when we call the function:
+
+```{webr}
+square = function(x) {
+  x * x
+}
+
+square(x = c(1,2,3))
+```
+
+## Can we `across()` it?
+
+```{r}
+penguins |>
+  mutate(across(where(is.numeric), square))
+```
+
+## Interpreting Functions, carefully
+
+. . .
+
+We write functions for two main, often overlapping, reasons:
+
+. . .
+
+1.  Following DRY (Don't Repeat Yourself) principle
+
+. . .
+
+2.  Creates modular structure and abstraction
+
+. . .
+
+Even if you are not writing functions (yet!), it is helpful to know how they are constructed to use them.
+
+## How functions are created
+
+```{r}
+addFunction = function(num1, num2) {
+  result = num1 + num2 
+  return(result)
+}
+```
+
+. . .
+
+```{r}
+addFunction(3, 4)
+```
+
+. . .
+
+When the function is called, the variables for the arguments are reassigned to function arguments to be used within the function. This ensures modularity.
+
+## Is this function modular?
+
+```{r}
+x = 3
+y = 4
+addFunction = function(num1, num2) {
+    result = x + y 
+    return(result)
+}
+```
+
+. . .
+
+```{r}
+addFunction(10, -5)
+```
+
+## Ways to call the function
+
+```{r}
+addFunction = function(num1, num2) {
+    result = x + y 
+    return(result)
+}
+```
+
+. . .
+
+```{r}
+addFunction(3, 4)
+```
+
+. . .
+
+```{r}
+addFunction(num1 = 3, num2 = 4)
+```
+
+. . .
+
+```{r}
+addFunction(num2 = 4, num1 = 3)
+```
+
+. . .
+
+But this *could* give a different result:
+
+```{r}
+addFunction(4, 3)
+```
+
+## Interpreting functions
+
+```         
+?mean
+
+Arithmetic Mean
+
+Description:
+
+     Generic function for the (trimmed) arithmetic mean.
+
+Usage:
+
+     mean(x, ...)
+     
+     ## Default S3 method:
+     mean(x, trim = 0, na.rm = FALSE, ...)
+     
+Arguments:
+
+       x: An R object.  Currently there are methods for numeric/logical
+          vectors and date, date-time and time interval objects.
+          Complex vectors are allowed for ‘trim = 0’, only.
+
+    trim: the fraction (0 to 0.5) of observations to be trimmed from
+          each end of ‘x’ before the mean is computed.  Values of trim
+          outside that range are taken as the nearest endpoint.
+
+   na.rm: a logical evaluating to ‘TRUE’ or ‘FALSE’ indicating whether
+          ‘NA’ values should be stripped before the computation
+          proceeds.
+
+     ...: further arguments passed to or from other methods.
+```
+
+## Interpreting functions
+
+Notice that the arguments `trim = 0`, `na.rm = FALSE` have default values. This means that these arguments are *optional* - you should provide it only if you want to. With this understanding, you can use `mean()` in a new way:
+
+. . .
+
+```{r}
+numbers = c(1, 2, NA, 4)
+mean(x = numbers, na.rm = TRUE)
+```
+
+. . .
+
+The use of `. . .` (dot-dot-dot): This is a special argument that allows a function to *take any number of arguments*. This isn't very useful for the `mean()` function, but it makes sense for function such as `select()` and `filter()`, and `mutate()`. For instance, in `select()`, once you provide your dataframe for the argument `.data`, you can pile on as many columns to select in the rest of the argument.
+
+
+## TL;DR
+
+- Review `mutate()`
+- Use `case_when()`
+- Use `mutate(across())`
+- A little about functions
+
+## That's all!
+
+Maybe see you Friday 10 - 11 am PT to practice together!
