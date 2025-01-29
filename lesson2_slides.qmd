@@ -32,23 +32,35 @@ library(tidyverse)
 library(palmerpenguins)
 ```
 
-# Catch Up on Exercises (20 Minutes)
+## Catch Up on Exercises (20 Minutes)
 
 - Work on exercises, if you haven't had the chance
 - Ask questions in chat
 
 `r countdown(minutes=20)`
 
+## Last Week Today (Clearest)
+
+> "The difference between double and single brackets for subsetting data in lists"
+
+> "vector dataframes and lists"
+
+> "I think the pacing is great and I am understanding the material so far!"
+
+## Last Week Today (Muddiest)
+
+> "I think so far I am following the material, although it did take a while to grasp the difference between single and double brackets"
+
 # Remember to Hit Record in Teams
 
 ## This week
 
-- Review of `mutate()`
-- `case_when()`
-- `across()`
-- `tidyselect` (if there is time)
+- Review `mutate()`
+- Use `case_when()`
+- Use `mutate(across())`
+- A little about functions
 
-## Review of `mutate`
+# Review of `mutate()`
 
 ## Modifying and creating new columns
 
@@ -58,22 +70,13 @@ I think of them like formulas in Excel.
 . . .
 
 ```{r}
-#| eval: false
-metadata |>
-  select(ModelID, Age) |>
-  head()
+penguins |>
+  mutate(weight_flipper = body_mass_g * flipper_length_mm)
 ```
 
-. . .
+## In Class: Mutate 1
 
-```{r}
-#| eval: false
-metadata2 <- metadata |>
-              mutate(olderAge = Age + 10) 
-metadata2
-```
-
-## Try it Out 
+`r countdown(minutes=2)`
 
 Try calcluating a new variable in `penguins` called `body_mass_kg` by dividing `body_mass_g` by 1000. 
 
@@ -104,6 +107,7 @@ head(penguins_new)
 ## Recoding Variables
 
 ![](images/case_when.png)
+Source: Allison Horst
 
 ## Recoding Data
 
@@ -112,7 +116,7 @@ Say we want to convert our `body_mass_g` column into a categorical column.
 With the criteria:
 
 - 4000 or smaller, we want to call "small"
-- Greater than 4000, we want ot call "medium"
+- Greater than 4000, we want ot call "large"
 
 We can write our criteria as follows:
 
@@ -198,7 +202,9 @@ penguins |>
   ))
 ```
 
-## Try it Out
+## In Class: Recode 1
+
+`r countdown(minutes=3)`
 
 Try to implement the following criteria for `flipper_length_mm`, making a new variable `flipper_size`:
 
@@ -249,16 +255,23 @@ And then we evaluate for the remaining values:
  flipper_length_mm >= 190
 ```
 
-And then we evaluate anything that doesn't meet the above conditions.
+And then we evaluate anything that doesn't meet the above conditions. By the time we get to the bottom function, we mostly have the `NA`s
+
+```
+TRUE ~ NA
+```
 
 ## How to do it in Base-R:
 
-```{webr}
-penguins$size = NA
-penguins[penguins$flipper_length_mm < 190, "size"] ~ "little"
-penguins[penguins$flipper_length_mm >= 190, "size"] ~ "big"
-```
+It's pretty ugly:
 
+```{r}
+penguins$size = NA
+penguins[!is.na(penguins$flipper_length_mm) & penguins$flipper_length_mm < 190, "size"] = "little"
+penguins[!is.na(penguins$flipper_length_mm) & penguins$flipper_length_mm >= 190, "size"] = "big"
+
+penguins
+```
 
 ## Conditionals
 
@@ -295,6 +308,7 @@ if(expression_A_is_TRUE) {
 ## `mutate(across())` apply a function to multiple columns
 
 ![](images/across.png)
+Source: Allison Horst
 
 ## Use `mutate(across())` to do something to multiple columns
 
@@ -342,7 +356,9 @@ across(c(bill_length_mm, bill_depth_mm), round())
 across(c(bill_length_mm, bill_depth_mm), round, digits=3)
 ```
 
-## Exercise: Selecting Columns
+## In Class: `across()` columns
+
+`r countdown(minutes=2)`
 
 Try converting the `species` and `island` columns to uppercase using `toupper()`
 
@@ -387,7 +403,9 @@ penguins |>
   mutate(across(where(is.double), round))
 ```
 
-### Exercise:
+## In Class: `across()` 2
+
+`r countdown(minutes=2)`
 
 Use `mutate(across())` to change everything that is a `factor` in `penguins` to upper case using `toupper`. 
 
@@ -440,7 +458,9 @@ penguins |>
     as.character))
 ```
 
-## Exercise 3
+## In Class: `across()` 3
+
+`r countdown(minutes=2)`
 
 Use `mutate(across)` to apply `round` to measurements that `starts_with("bill")` 
 
@@ -480,7 +500,7 @@ square = function(x) {
 }
 ```
 
-## Try it out!
+## In Class: Functions 1
 
 What do you expect when we apply it to a vector?
 
@@ -506,7 +526,12 @@ square(x = c(1,2,3))
 
 ## Can we `across()` it?
 
-```{r}
+Try it out!
+
+```{webr}
+square = function(x) {
+  x * x
+}
 penguins |>
   mutate(across(where(is.numeric), square))
 ```
@@ -554,7 +579,7 @@ When the function is called, the variables for the arguments are reassigned to f
 x = 3
 y = 4
 addFunction = function(num1, num2) {
-    result = x + y 
+    result = num1 + num2 
     return(result)
 }
 ```
@@ -569,7 +594,7 @@ addFunction(10, -5)
 
 ```{r}
 addFunction = function(num1, num2) {
-    result = x + y 
+    result = num1 + num2 
     return(result)
 }
 ```
