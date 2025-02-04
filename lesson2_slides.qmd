@@ -76,8 +76,6 @@ penguins |>
 
 ## In Class: Mutate 1
 
-`r countdown(minutes=2)`
-
 Try calcluating a new variable in `penguins` called `body_mass_kg` by dividing `body_mass_g` by 1000. 
 
 Confirm your conversion was correct by comparing `body_mass_g` and `body_mass_kg`.
@@ -116,7 +114,7 @@ Say we want to convert our `body_mass_g` column into a categorical column.
 With the criteria:
 
 - 4000 or smaller, we want to call "small"
-- Greater than 4000, we want ot call "large"
+- Greater than 4000, we want to call "large"
 
 We can write our criteria as follows:
 
@@ -162,10 +160,10 @@ With the criteria:
 - Between 3501 and 4000, we want to call "medium"
 - Greater than 4000, we want to call "large"
 
-For medium, we need to chain two comparisons:
+For `medium`, we need to chain two comparisons:
 
 ```
-body_mass_g > 3500 & body_mass_g < 4000 ~ "medium"
+body_mass_g > 3500 & body_mass_g <= 4000 ~ "medium"
 ```
 
 Here we're combining two comparisons with the `&` operator.
@@ -176,8 +174,8 @@ Here we're combining two comparisons with the `&` operator.
 penguins |>
   select(species, island, body_mass_g) |>
   mutate(size = case_when(
-    body_mass_g < 3500 ~ "small",
-    body_mass_g > 3500 & body_mass_g < 4000 ~ "medium",
+    body_mass_g <= 3500 ~ "small",
+    body_mass_g > 3500 & body_mass_g <= 4000 ~ "medium",
     body_mass_g > 4000 ~ "large",
     TRUE ~ NA
   ))
@@ -185,9 +183,9 @@ penguins |>
 
 ## What's up with `TRUE ~ NA`?
 
-This is what's known as a catchall category. If our values meet none of the above criteria, then we code it as `NA`
+This is what's known as a catchall category. If our values meet none of the above criteria, then we code it as `NA`. You can use other values here as well.
 
-This is super helpful when our criteria are not completely inclusive - there was a subset of values that were missed.
+This is super helpful when our criteria are not completely inclusive - there was a subset of values that were missed in our `case_when()`
 
 If you don't like that, you can pass the additional `.default` argument instead:
 
@@ -203,8 +201,6 @@ penguins |>
 ```
 
 ## In Class: Recode 1
-
-`r countdown(minutes=3)`
 
 Try to implement the following criteria for `flipper_length_mm`, making a new variable `flipper_size`:
 
@@ -305,7 +301,7 @@ if(expression_A_is_TRUE) {
 
 # `mutate(across())`
 
-## `mutate(across())` apply a function to multiple columns
+## `mutate(across())` 
 
 ![](images/across.png)
 Source: Allison Horst
@@ -358,8 +354,6 @@ across(c(bill_length_mm, bill_depth_mm), round, digits=3)
 
 ## In Class: `across()` columns
 
-`r countdown(minutes=2)`
-
 Try converting the `species` and `island` columns to uppercase using `toupper()`
 
 ```{webr}
@@ -404,8 +398,6 @@ penguins |>
 ```
 
 ## In Class: `across()` 2
-
-`r countdown(minutes=2)`
 
 Use `mutate(across())` to change everything that is a `factor` in `penguins` to upper case using `toupper`. 
 
@@ -459,8 +451,6 @@ penguins |>
 ```
 
 ## In Class: `across()` 3
-
-`r countdown(minutes=2)`
 
 Use `mutate(across)` to apply `round` to measurements that `starts_with("bill")` 
 

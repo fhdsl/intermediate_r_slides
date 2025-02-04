@@ -1,0 +1,472 @@
+---
+title: "W3: Data Cleaning 2"
+format: 
+  live-revealjs:
+    df-print: paged
+    smaller: true
+    scrollable: true
+    echo: true
+    embed-resources: true
+    footer: <https://bit.ly/intr_wk3>
+    drop:
+      engine: webr
+      button: true
+webr:
+  render-df: paged-table
+---
+
+{{< include ./_extensions/r-wasm/live/_knitr.qmd >}}
+
+```{r, echo=F, message=F, warning=F}
+library(tidyverse)
+
+#demo data
+untidy1 = data.frame(Store = c("A", "B"),
+                Q1_Sales = c(55, 98),
+                Q2_Sales = c(45, 70),
+                Q3_Sales = c(22, 60),
+                Q4_Sales = c(50, 60))
+
+
+tidy2 = data.frame(Sample = c("A", "B", "C"),
+                 KRAS_mutation = c(TRUE, FALSE, TRUE),
+                 KRAS_expression = c(2.3, 3.9, 1.2)) 
+
+untidy2 = pivot_longer(tidy2, c("KRAS_mutation", "KRAS_expression"), names_to = "gene", values_to = "values")
+
+untidy3 = table3
+
+relig_income_sm = select(relig_income, religion, `<$10k`, `$10-20k`, `$20-30k`) #|> janitor::clean_names()
+#relig_income_sm
+
+```
+
+```{webr}
+#| edit: false
+#| echo: false
+#| message: false
+library(tidyverse)
+library(janitor)
+#demo data
+untidy1 = data.frame(Store = c("A", "B"),
+                Q1_Sales = c(55, 98),
+                Q2_Sales = c(45, 70),
+                Q3_Sales = c(22, 60),
+                Q4_Sales = c(50, 60))
+
+tidy1 = untidy1 |>
+  pivot_longer(cols= c("Q1_Sales", 
+                       "Q2_Sales", 
+                       "Q3_Sales", 
+                       "Q4_Sales"), 
+               names_to = "Quarter", 
+               values_to = "Sales")
+
+tidy2 = data.frame(Sample = c("A", "B", "C"),
+                 KRAS_mutation = c(TRUE, FALSE, TRUE),
+                 KRAS_expression = c(2.3, 3.9, 1.2))
+
+untidy2 = pivot_longer(tidy2, c("KRAS_mutation", "KRAS_expression"), names_to = "gene", values_to = "value")
+
+relig_income_sm = select(relig_income, religion, `<$10k`, `$10-20k`, `$20-30k`) 
+#|>
+#  janitor::clean_names()
+#relig_income_sm
+```
+
+## Agenda:
+
+-   Work Time (20 minutes)
+-   Introduce State Cancer Profiles project
+-   Data Cleaning 2: Tidy Data
+
+## `{janitor}`
+
+Oftentimes, capitilization and spacing in column names is a nightmare when bringing in data.
+
+- `cutoff 20%`
+- `FruitPerDay`
+
+And it is hard to consistently call things. We need to use backticks when we refer to variables.
+
+What `janitor::clean_names()` is transform your variable names into consistent capitalization and spacing.
+
+- `cutoff_20`
+- `fruit_per_day`
+
+It's usually one of the first functions that I use when I load data.
+
+## Tidy Data
+
+A standard of organizing data ready for analysis: Tidy data.
+
+Many tools in R, such as plotting, are most effective when your data is in a Tidy format.
+
+## What is Tidy Data?
+
+1.  Each observation must have its own row.
+2.  Each variable must have its own column.
+3.  Each value must have its own cell.
+
+![](https://r4ds.hadley.nz/images/tidy-1.png){alt="A tidy dataframe." width="800"}
+
+. . .
+
+Easier to understand by looking at common un-Tidy data situations.
+
+
+## Tidy or Not?
+
+```{r}
+#| echo: false
+#| message: false
+tf <- read_csv("data/total_fertility.csv")
+head(tf, 10)
+```
+
+- Depends on what you want to do with the data
+- Plot fertility rates over years, with a line for each country (not tidy)
+
+## Situations with untidy data
+
+- Multiple columns map to a single variable (wide -> long)
+- One column maps to multiple variables (long -> wide)
+- One column contains mutliple values (separate)
+
+The solution for this is the `{tidyr}` package!
+
+## `{tidyr}`
+
+- Part of the `tidyverse`
+- Contains functions for reshaping data
+  - `pivot_longer()`
+  - `pivot_wider()`
+  - `separate()`
+  - `drop_na()`
+
+## Situation: Multiple columns map to a single variable
+
+```{r}
+untidy1
+```
+
+::: {.incremental}
+- Want to look at the relationship between sales numbers and quarters for each store type.
+- Need variables: Quarter, Sales numbers, Store type
+- 👌 Observation is a store, and each observation has its own row.
+- 😩 The columns "Q1_Sales", ..., "Q4_Sales" seem to be *values of a single variable "quarter"* of our observation.
+:::
+
+## Reshaping the data
+
+- 😩 The columns "Q1_Sales", ..., "Q4_Sales" seem to be *values of a single variable "quarter"* of our observation.
+- We want to make these into two columns: 
+  - The quarter name (`Quarter`), 
+  - The value for that quarter (`Sales`)
+
+```{r}
+#| echo: false
+tidy1 = untidy1 |>
+  pivot_longer(cols= c("Q1_Sales", 
+                       "Q2_Sales", 
+                       "Q3_Sales", 
+                       "Q4_Sales"), 
+               names_to = "Quarter", 
+               values_to = "Sales")
+tidy1
+```
+
+## `pivot_longer()`
+
+Solution: make the data into a **longer** format. 
+
+![](images/tidyr-pivot-longer-loop.gif)
+
+
+[Tidyexplain](https://github.com/gadenbuie/tidyexplain)
+
+## `pivot_longer()`
+
+Solution: make the data into a **longer** format.
+
+::::{.columns}
+:::{.column width="50%"}
+![](images/tidyr-pivot-longer-loop.gif)
+:::
+:::{.column width="50%"}
+
+```{r}
+tidy1 = untidy1 |>
+  pivot_longer(cols= c("Q1_Sales", 
+                       "Q2_Sales", 
+                       "Q3_Sales", 
+                       "Q4_Sales"), 
+               names_to = "Quarter", 
+               values_to = "Sales")
+tidy1
+```
+
+:::
+::::
+[Tidyexplain](https://github.com/gadenbuie/tidyexplain)
+
+
+## `pivot_longer()`
+
+::::{.columns}
+:::{.column width="50%"}
+```{r}
+tidy1
+```
+:::
+:::{.column width="50%"}
+- 👌 Observation is a store's quarter.
+- 👌 The new columns "quarter" and "sales" are variables with their own columns.
+
+:::
+::::
+
+
+## Plotting the longer data
+
+This is a common transformation, as it is easier to do data entry via a wider format, but the tools we use in programming often requires it in a longer format.
+
+::::{.columns}
+:::{.column width="35%"}
+```{r}
+tidy1
+```
+:::
+:::{.column width="65%"}
+- Try plotting the transformed data `tidy1`
+  - map `x` to  `Quarter`, `y` to `Sales`, and `group` to `Store`
+
+```{webr}
+#| exercise: long1
+ggplot(tidy1) + aes(x = ------, 
+                    y = -----, 
+                    group = -----) + 
+  geom_line() 
+```
+
+::: {.solution exercise="long1"}
+
+#### Solution
+
+```{webr}
+#| exercise: long1
+#| solution: true
+ggplot(tidy1) + aes(x = Quarter, 
+                    y = Sales, 
+                    group = Store) + 
+  geom_line() 
+```
+:::
+:::
+::::
+
+## Thinking about `pivot_longer()`
+
+- What columns in this dataset could be combined into one column?
+
+```{r}
+relig_income_sm[1:5,] 
+```
+
+- You'll have the opportunity to work on this at the end of class.
+
+## Situation: One column maps to multiple variables
+
+```{r}
+untidy2
+```
+
+::: {.incremental}
+- What's the relationship between KRAS mutation and KRAS expression?
+- 😩 Observation is a sample's gene type?
+- 😩 The variables we want, KRAS_mutation and KRAS_expression, are in rows. The current columns contain multiple types of info: `gene` contains both mutations and expression, and `value` contains both gene expression and mutational status.
+:::
+
+## `pivot_wider()`
+
+Solution: make the data into a **wider** format.
+ [Tidyexplain](https://github.com/gadenbuie/tidyexplain)
+
+::::{.columns}
+:::{.column width="40%"}
+![](images/tidyr-pivot-wider-loop.gif)
+:::
+
+:::{.column width="60%"}
+.
+:::
+::::
+
+## `pivot_wider()`
+
+Solution: make the data into a **wider** format.
+ [Tidyexplain](https://github.com/gadenbuie/tidyexplain)
+
+::::{.columns}
+:::{.column width="40%"}
+![](images/tidyr-pivot-wider-loop.gif)
+:::
+:::{.column width="60%"}
+```{r}
+tidy2 = pivot_wider(untidy2, 
+                    names_from = "gene", 
+                    values_from = "values") |>
+  mutate(KRAS_mutation = as.logical(KRAS_mutation))
+
+tidy2
+```
+
+:::
+::::
+
+
+## `pivot_wider()`
+
+::::{.columns}
+:::{.column width="65%"}
+```{r}
+tidy2
+```
+
+:::
+:::{.column width="35%"}
+:::{.incremental}
+👌 Observation is a sample.
+👌 The new columns are appropriate variables for our analysis.
+:::
+:::
+::::
+
+## Plotting our wide data
+  
+```{r}
+tidy2
+```
+
+-  Take a look at `tidy2` first.
+-  Make a ggplot with `tidy2`. 
+    - Map `x` to `KRAS_mutation`
+    - `y` to `KRAS_expression`
+    - `color` to `KRAS_mutation`
+
+```{webr}
+#| exercise: wider1
+ggplot(tidy2) + aes(x = -------, 
+                    y = -------,
+                    color = ------) + 
+  geom_point()
+```
+
+::: {.solution exercise="wider1"}
+
+#### Solution
+
+```{webr}
+#| exercise: wider1
+#| solution: true
+ggplot(tidy2) + aes(x = KRAS_mutation, 
+                    y = KRAS_expression,
+                    color = KRAS_mutation) + 
+  geom_point()
+```
+:::
+
+
+## Inverse Operations
+
+`pivot_longer()` can undo what we did in `pivot_wider()`, and vice versa.
+
+::::{.columns}
+:::{.column width="35%"}
+![](images/tidyr-pivoting.gif)
+:::
+:::{.column width="65%"}
+```{r}
+pivot_longer(tidy2, c("KRAS_mutation", 
+                      "KRAS_expression"), 
+             names_to = "gene", 
+             values_to = "values")
+```
+:::
+::::
+
+
+## Situation: Multiple variables are stored in a single column
+
+::::{.columns}
+:::{.column width="65%"}
+```{r}
+untidy3
+```
+
+:::
+:::{.column width="35%"}
+😩 The rate column's values have multiple values in its cell.
+:::
+::::
+
+## `separate()`
+
+Solution: Let's separate it:
+
+::::{.columns}
+:::{.column width="35%"}
+Before
+```{r}
+untidy3
+```
+:::
+:::{.column width="65%"}
+After
+```{r}
+tidy3 = separate(untidy3, 
+                 col = "rate", 
+                 into = c("count", "population"), 
+                 sep = "/")
+tidy3
+```
+
+:::
+::::
+
+
+## Subjectivity in Tidy data
+
+We have looked at clear cases of when a dataset is Tidy. In reality, the Tidy state depends on what we call variables and observations for the analysis we want to conduct.
+
+Tools such as ggplot require precise definition of our variables, so planning ahead what we want to use with our tools creates clarity of what we call variables and observations.
+
+Tip: think about what you want to do with the data, and work backwards. That will help you identify whether the data is tidy or not.
+
+## Challenge
+
+What analysis would you want to do with this dataset, and what kind of transformation would you do to get it Tidy?
+
+```{webr}
+#| exercise: long_r
+relig_income_sm |>
+  pivot_longer(cols = c(`<$10k`,---- ,----- ),
+    names_to = --------;
+    values_to = --------,
+    )
+```
+
+::: {.solution exercise="long_r"}
+
+#### Solution
+
+```{webr}
+#| exercise: long_r
+#| solution: true
+relig_income_sm |>
+  pivot_longer(cols = c(`<$10k`,`$10-20k`,`$20-30k` ),
+    names_to = "income",
+    values_to = "count",
+    )
+```
+:::
