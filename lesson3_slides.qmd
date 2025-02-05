@@ -84,6 +84,16 @@ relig_income_sm = select(relig_income, religion, `<$10k`, `$10-20k`, `$20-30k`)
 
 `r countdown(minutes=20)`
 
+# Remember to Hit Record in Teams
+
+## State Cancer Profiles
+
+- Available here: <https://statecancerprofiles.cancer.gov/index.html>
+- R package: <https://github.com/getwilds/cancerprof>
+    - Lets you programmatically request data in `data.frame` format
+- Looking at Melanoma incidence rates in Washington
+    - Compare Male and Female incidences
+
 ## `{janitor}`
 
 Oftentimes, capitilization and spacing in column names is a nightmare when bringing in data.
