@@ -100,6 +100,21 @@ What `janitor::clean_names()` is transform your variable names into consistent c
 
 It's usually one of the first functions that I use when I load data.
 
+## `clean_names`
+
+before
+
+```{r}
+untidy1
+```
+
+After
+
+```{r}
+untidy1_clean <- untidy1 |> janitor::clean_names()
+untidy1_clean
+```
+
 ## Tidy Data
 
 A standard of organizing data ready for analysis: Tidy data.
