@@ -19,7 +19,7 @@ webr:
 
 ```{r, echo=F, message=F, warning=F}
 library(tidyverse)
-
+library(countdown)
 #demo data
 untidy1 = data.frame(Store = c("A", "B"),
                 Q1_Sales = c(55, 98),
@@ -79,6 +79,10 @@ relig_income_sm = select(relig_income, religion, `<$10k`, `$10-20k`, `$20-30k`)
 -   Work Time (20 minutes)
 -   Introduce State Cancer Profiles project
 -   Data Cleaning 2: Tidy Data
+
+# Worktime
+
+`r countdown(minutes=20)`
 
 ## `{janitor}`
 
