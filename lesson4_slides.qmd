@@ -1,0 +1,328 @@
+---
+title: "W4: Writing your first function"
+format: 
+  live-revealjs:
+    df-print: paged
+    smaller: true
+    scrollable: true
+    echo: true
+    embed-resources: true
+    footer: <https://bit.ly/intr_wk4>
+    drop:
+      engine: webr
+      button: true
+webr:
+  render-df: paged-table
+---
+
+{{< include ./_extensions/r-wasm/live/_knitr.qmd >}}
+
+## Question Time / Catch Up Time
+
+`r countdown::countdown(minutes=20)``
+
+## When should you write a function?
+
+- Programmers have an acronym: DRY, which is short for "Don't Repeat Yourself". 
+- If you plan to do something multiple times, then you should probably think of writing a function.
+
+From [R for Data Science](https://r4ds.had.co.nz/functions.html):
+
+> Writing a function has three big advantages over using copy-and-paste:
+>
+> 1. You can give a function an evocative name that makes your code easier to understand.
+> 2. As requirements change, you only need to update code in one place, instead of many.
+> 3. You eliminate the chance of making incidental mistakes when you copy and paste (i.e. updating a variable name in one place, but not in another).
+
+```{webr}
+#| message: false
+#| echo: false
+#| warning: false
+#| edit: false
+#| context: setup
+library(tidyverse)
+library(palmerpenguins)
+```
+
+```{r}
+#| message: false
+#| echo: false
+#| warning: false
+library(tidyverse)
+library(palmerpenguins)
+```
+## Anatomy of a function definition
+
+*Function definition consists of assigning a **function name** with a "function" statement that has a comma-separated list of named **function arguments**, and a **return expression**. The function name is stored as a variable in the global environment.*
+
+. . .
+
+```{r}
+addFunction <- function(argument1, argument2) {    ##Function signature
+  result = argument1 + argument2                  ##Function code
+  return(result)                                  ##Return Value
+}
+```
+
+## Function Names
+
+```r
+addFunction <- function(argument1, argument2) { 
+```
+
+- We give our function a name
+- Be careful when you name functions that you don't use reserved words
+
+## Function signatures
+
+```r
+function(argument1, argument2)
+```
+
+- Defines the options and variables we will pass into the function
+- We can set defaults to an argument, such as:
+
+```
+function(argument1, argument2 = 3)
+```
+
+In this case, we can then run 
+
+```r
+addFunction(1)
+```
+
+## Function Code
+
+```r
+{    
+  result = argument1 + argument2                  
+  return(result)                                 
+}
+```
+
+- code enclosed in curly brackets: `{}`
+- need to return a value with `return()`
+
+## Using our function:
+
+We call it by using:
+
+```{r}
+addFunction(3, 4)
+```
+
+. . .
+
+When the function is called, the variables are reassigned to function arguments to be used within the function and helps with the modular form.
+
+## Practical Example of a function
+
+Things to ask yourself:
+
+- What does this function do?
+- What is the output? What kind of object is the output?
+
+```{r}
+count_categories <- function(df){
+  counts <- df %>%
+    count(disease)
+  
+  return(counts)
+}
+```
+
+# Local and global environments
+
+> { } represents variable scoping: within each { }, if variables are defined, they are stored in a **local environment**, and is only accessible within { }. All function arguments are stored in the local environment. The overall environment of the program is called the **global environment** and can be also accessed within { }.*
+
+## Global environment: 
+
+- What you see when you use `ls()` in the console:
+
+```{r}
+ls()
+```
+
+- Contains functions/objects we've created
+- The entire "workspace"
+
+## Local Environments
+
+- Functions have these
+- Only "sees" objects that you pass in as arguments through the signature
+- Within a function, it is best to work with arguments that you pass into them, rather than one you don't pass in.
+- Can see these using the `debugonce()` function:
+
+```r
+debugonce(addFunction)
+addFunction(argument1=10, argument2=2)
+```
+
+# Bad things happen if you try and use global variables in your functions
+
+## Why do functions have their own environment?
+
+This "privacy" in the local environment is to make functions modular - they are independent tools that does not depend on the status of the global environment.
+
+## Step-by-step example
+
+Using the `addFunction` function, let's see step-by-step how the R interpreter understands our code:
+
+![We define the function in the global environment.](images/func1.png)
+
+. . .
+
+![We call the function, and the function arguments 3, 4 are assigned to argument1 and argument2, respectively in the function's local environment.](images/func2.png)
+
+. . .
+
+![We run the first line of code in the function body. The new variable "result" is stored in the local environment because it is within { }.](images/func3.png)
+
+. . .
+
+![We run the second line of code in the function body to return a value. The return value from the function is assigned to the variable z in the global environment. All local variables for the function are erased now that the function call is over.](images/func4.png)
+
+## Writing functions that work with the `tidyverse`
+
+- First argument is always a `data.frame`
+- `tidyverse` functions work with bare column names
+    - you can replicate this with `{{}}` (curly-curly)
+- Needs to return a `data.frame`
+
+```{webr}
+my_counts <- function(df, col_name) {
+    counts <- df %>%
+    count({{col_name}})
+  
+  return(counts)
+}
+```
+
+## Running our new function:
+
+```{webr}
+my_counts(df=penguins, col_name=sex)
+```
+
+
+## Wrapper Functions
+
+One good way to get started learning how to write functions is to write **wrapper functions** for other functions.
+
+Wrapper functions are ways to call more complicated functions with default parameters. The underlying function may be very complicated and have a lot of parameters, but we can simplify using a function.
+
+Say there is a `ggplot()` setting default that we never want to use. We can actually change the default arguments for this function. For example, we could write our own version of `geom_bar()`:
+
+```{r}
+library(ggplot2)
+geom_my_bar <- function(...){
+  geom_bar(position="dodge", ...)
+}
+
+
+```
+
+
+## Your turn!
+
+Create a function, called `add_and_raise_power` in which the function takes in 3 numeric arguments. The function computes the following: the first two arguments are added together and raised to a power determined by the 3rd argument. The function returns the resulting value.
+
+Here is a use case: `add_and_raise_power(1, 2, 3) = 27` because the function will return this expression: `(1 + 2) ^ 3`.
+
+Another use case: `add_and_raise_power(3, 1, 2) = 16` because of the expression `(3 + 1) ^ 2`. Confirm with that these use cases work.
+
+```{webr}
+#| exercise: add1
+add_and_raise_power<- function(x, y, z){
+  output <- (-----) ^ --
+  return(output)
+}
+
+```
+
+::: {.solution exercise="add1"}
+
+#### Solution
+
+```{webr}
+#| exercise: add1
+#| solution: true
+add_and_raise_power<- function(x, y, z){
+  output <- (x + y) ^ z
+  return(output)
+}
+```
+:::
+
+
+## Another exercise
+
+Create a function, called `my_dim` in which the function takes in one argument: a dataframe. The function returns the following: a length-2 numeric vector in which the first element is the number of rows in the dataframe, and the second element is the number of columns in the dataframe. Your result should be identical as the `dim` function. How can you leverage existing functions such as `nrow` and `ncol`?
+
+Use case: `my_dim(penguins) = c(344, 8)`
+
+```{webr}
+#| exercise: mydim1
+my_dim <- function(df){
+  num_cols <- ----(df)
+  num_rows <- ----(df)
+  return(c(num_rows, ------))
+}
+
+```
+
+::: {.solution exercise="mydim1"}
+
+#### Solution
+
+```{webr}
+#| exercise: mydim1
+#| solution: true
+
+my_dim <- function(df){
+  num_cols <- ncol(df)
+  num_rows <- nrow(df)
+  return(c(num_rows, num_cols))
+}
+
+```
+:::
+
+
+## Last Exercise
+
+Create your own tidyverse function that returns a `group_by()`/`summarize()` or `mean()` for two columns: 1 column should be the `group_by()` variable, and it should return the mean of the second column in the `data.frame`
+
+Test out your function with `penguins`:
+
+```{webr}
+#| exercise: tidy1
+gr_sum <- function(df, col_group, col_mean) {
+  
+out <-  df |>
+    group_by({{---------}}) |>
+    summarize(mean_val = mean({{----------}}))
+
+return(out)
+}
+```
+
+::: {.solution exercise="tidy1"}
+
+#### Solution
+
+```{webr}
+#| exercise: ex_1
+#| solution: true
+
+gr_sum <- function(df, col_group, col_mean) {
+  
+out <-  df |>
+    group_by({{col_group}}) |>
+    summarize(mean_val = mean({{col_mean}}))
+
+return(out)
+}
+```
+:::
