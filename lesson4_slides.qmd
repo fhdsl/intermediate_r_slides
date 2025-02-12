@@ -71,7 +71,7 @@ addFunction <- function(argument1, argument2) {
 ```
 
 - We give our function a name
-- Be careful when you name functions that you don't use reserved words
+- Be careful when you name functions that you don't use [reserved words](https://rdrr.io/r/base/Reserved.html)
 
 ## Function signatures
 
@@ -79,12 +79,16 @@ addFunction <- function(argument1, argument2) {
 function(argument1, argument2)
 ```
 
+. . .
+
 - Defines the options and variables we will pass into the function
 - We can set defaults to an argument, such as:
 
 ```
 function(argument1, argument2 = 3)
 ```
+
+. . .
 
 In this case, we can then run 
 
@@ -100,6 +104,8 @@ addFunction(1)
   return(result)                                 
 }
 ```
+
+...
 
 - code enclosed in curly brackets: `{}`
 - need to return a value with `return()`
@@ -132,9 +138,17 @@ count_categories <- function(df){
 }
 ```
 
-# Local and global environments
+## Local and global environments
 
-> { } represents variable scoping: within each { }, if variables are defined, they are stored in a **local environment**, and is only accessible within { }. All function arguments are stored in the local environment. The overall environment of the program is called the **global environment** and can be also accessed within { }.*
+- `{ }` represents variable scoping: within each `{ }`, if variables are defined, they are stored in a **local environment**, and is only accessible within `{ }`. 
+
+. . .
+
+- All function arguments are stored in the local environment. The overall environment of the program is called the **global environment** and can be also accessed within `{ }`.*
+
+. . .
+
+The reason of having some of this "privacy" in the local environment is to make functions **modular** - they are independent little tools that should not interact with the rest of the global environment. Imagine someone writing a tool that they want to give someone else to use, but the tool depends on your environment, vice versa.
 
 ## Global environment: 
 
@@ -152,6 +166,7 @@ ls()
 - Functions have these
 - Only "sees" objects that you pass in as arguments through the signature
 - Within a function, it is best to work with arguments that you pass into them, rather than one you don't pass in.
+- When function is done executing, variables in the local environment disappear, and we no longer have access.
 - Can see these using the `debugonce()` function:
 
 ```r
@@ -159,7 +174,9 @@ debugonce(addFunction)
 addFunction(argument1=10, argument2=2)
 ```
 
-# Bad things happen if you try and use global variables in your functions
+# TL;DR
+
+- Don't use global variables in your functions unless you explicitly pass them into the function
 
 ## Why do functions have their own environment?
 
