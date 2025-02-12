@@ -447,7 +447,8 @@ Solution: Let's separate it:
 :::{.column width="35%"}
 Before
 ```{r}
-untidy3
+untidy3 |>
+  mutate(rate = as.numeric(rate))
 ```
 :::
 :::{.column width="65%"}
@@ -475,6 +476,12 @@ Tip: think about what you want to do with the data, and work backwards. That wil
 ## Challenge
 
 What analysis would you want to do with this dataset, and what kind of transformation would you do to get it Tidy?
+
+```{r}
+relig_income_sm |>
+  pivot_longer(cols =c("<$10k","$10-20k", "$20-30k"),
+    names_to = "income", values_to= "count")
+```
 
 ```{webr}
 #| exercise: long_r

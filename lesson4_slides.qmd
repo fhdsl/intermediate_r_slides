@@ -212,14 +212,17 @@ One good way to get started learning how to write functions is to write **wrappe
 
 Wrapper functions are ways to call more complicated functions with default parameters. The underlying function may be very complicated and have a lot of parameters, but we can simplify using a function.
 
-Say there is a `ggplot()` setting default that we never want to use. We can actually change the default arguments for this function. For example, we could write our own version of `geom_bar()`:
+Say we always want the `na.rm` argument to be `TRUE` in `mean()`. We can define a wrapper function `mean_na()` like this:
 
 ```{r}
-library(ggplot2)
-geom_my_bar <- function(...){
-  geom_bar(position="dodge", ...)
+
+mean_na <- function(x){
+  out <- mean(x, 
+              na.rm=TRUE)
+  return(out)
 }
 
+mean_na(c(1,2,5,NA,35))
 
 ```
 
