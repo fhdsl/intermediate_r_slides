@@ -214,7 +214,7 @@ Wrapper functions are ways to call more complicated functions with default param
 
 Say we always want the `na.rm` argument to be `TRUE` in `mean()`. We can define a wrapper function `mean_na()` like this:
 
-```{r}
+```{webr}
 
 mean_na <- function(x){
   out <- mean(x, 
