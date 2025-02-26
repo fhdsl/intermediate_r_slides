@@ -1,0 +1,419 @@
+---
+title: "W5: Iterating tasks"
+format: 
+  live-revealjs:
+    df-print: paged
+    smaller: true
+    scrollable: true
+    echo: true
+    embed-resources: true
+    footer: <https://bit.ly/intr_wk2>
+    drop:
+      engine: webr
+      button: true
+webr:
+  render-df: paged-table
+  resources: data/tumor/
+output-location: fragment
+---
+
+{{< include ./_extensions/r-wasm/live/_knitr.qmd >}}
+
+```{webr}
+#| message: false
+#| echo: false
+#| warning: false
+#| edit: false
+#| context: setup
+library(tidyverse)
+library(palmerpenguins)
+file_list <- list.files("data/tumor", full.names = TRUE)
+plot_recurrence <- function(df){
+  ggplot(df) +
+    aes(x=days_to_last_follow_up,
+        y=age_at_diagnosis) +
+    geom_point()
+}
+my_vector = c(1, 3, 5, 7)
+result = map(my_vector, log)
+species_to_analyze = c("Adelie", "Chinstrap", "Gentoo")
+analyze_bill <- function(species_to_analyze){
+  penguins_subset = filter(penguins, species == species_to_analyze)
+  out <- mean(penguins_subset$bill_length_mm, na.rm = TRUE)
+  return(out)
+}
+
+```
+
+```{r}
+#| echo: false
+library(tidyverse)
+library(palmerpenguins)
+plot_recurrence <- function(df){
+  ggplot(df) +
+    aes(x=days_to_last_follow_up,
+        y=age_at_diagnosis) +
+    geom_point()
+}
+my_vector = c(1, 3, 5, 7)
+result = map(my_vector, log)
+```
+
+## Iterating tasks
+
+Suppose that you want to repeat a chunk of code many times, but changing one variable's value each time you do it: This could be modifying each element of a vector in the same way, or analyzing a dataframe multiple times with different parameters.
+
+## Iterating tasks: solutions
+
+1.  Copy and paste the code chunk, and change that variable's value. Repeat. *This can be a starting point in your analysis, but will lead to errors easily.*
+
+. . .
+
+2.  **Functionals** (`_apply`, `map_` functions) allow you to take a function that solves the problem for a single input and generalize it to handle any number of inputs. *This is very popular in R programming culture.*
+
+. . .
+
+3.  Use a `for` loop to repeat the chunk of code, and let it loop over the changing variable's value. *This is popular for many programming languages, but the R programming culture encourages a functional way instead*.
+
+## Review of lists
+
+- Remember, lists are the most general data structure
+
+. . .
+
+- We can put anything into them
+    - Specifically, talking about lists with same things in each slot
+    - For example: 
+      - a list of file paths
+      - a list of `data.frame`s
+      - a list of plots
+
+. . .
+
+- Ideally, we want to apply the same function to them.
+
+## Functionals via `map()`
+
+`map()` takes in a vector or a list, and then applies the function on each element of it. The output is *always* a list.
+
+```r
+map(my_vector, log)
+    ^vector   ^function
+```
+
+```{webr}
+my_vector = c(1, 3, 5, 7)
+result = map(my_vector, log)
+          #   ^vector.    ^function
+result
+```
+
+. . .
+
+```{webr}
+result[[1]]
+```
+
+
+## `purrr::map()`
+
+![](images/map_frosting.png)
+
+## Another View of `map()`
+
+![](images/map1.png)
+
+## The basic formula
+
+1. Define what you want to do
+1. Do it once on test data, write function if necessary
+1. Make a list of objects to iterate through
+1. Apply function multiple times on the list elements
+
+## 1. Loading up a list of files
+
+![](images/map_file.png)
+
+## 2. Do it once
+
+We want to load up four data frames in the `data/tumor/` directory using `read_csv`. Let's try doing it for one first:
+
+```{webr}
+#| warning: false
+#| message: false
+list.files("data/tumor", full.names=TRUE)
+read_csv("data/tumor/LUSC.csv")
+```
+
+## 3. Make a list
+
+Now we build our list by listing the files in `data/tumor/`:
+
+```{webr}
+#| warning: false
+#| message: false
+file_list <- list.files("data/tumor", full.names = TRUE)
+file_list
+```
+
+## 4. Do it multiple times
+
+Now we can apply `read_csv` to each element in `file_list`. We can load these up by applying `read_csv` on each element of the file list.
+
+Check what `df_list[[1]]` is:
+
+```{webr}
+#| warning: false
+#| message: false
+df_list <- purrr::map(file_list, read_csv)
+df_list
+```
+
+## Plotting our Data Frames
+
+1. We want to apply a plotting function to every data frame in a list.
+2. Write a function called `plot_recurrence`. Try it out with a data.frame
+3. Load our data into a list called `df_list` using `read_csv`.
+4. Apply our function `plot_recurrence` to `df_list` using `map()`
+
+## 1. Define What we want to do
+
+![](images/map_ggplot.png)
+
+## 2. Write a function, try it out on one DF
+
+Write a function called `plot_recurrence` that plots `days_to_last_follow_up` vs. `age_at_diagnosis`. Try running it on `lusc_data`
+
+```{webr}
+#| exercise: ggplot1
+lusc_data <- read_csv("data/tumor/LUSC.csv")
+
+plot_recurrence <- function(df){
+  ggplot(df) +
+    aes(x=-------,
+        y= --------) +
+    geom_point
+}
+
+plot_recurrence(lusc_data)
+
+```
+
+::: {.solution exercise="ggplot1"}
+
+#### Solution
+
+```{webr}
+#| exercise: ggplot1
+#| solution: true
+plot_recurrence <- function(df){
+  ggplot(df) +
+    aes(x=days_to_last_followup,
+        y= age_at_diagnosis) +
+    geom_point
+}
+
+plot_recurrence(lusc_data)
+
+```
+:::
+
+
+## 3. Build our list
+
+- We use `read_csv` on our list of file paths.
+
+```{webr}
+df_list <- purrr::map(file_list, read_csv)
+df_list
+```
+
+## 4. Apply our Function to the list
+
+Try applying `plot_recurrence()` to each element of `df_list` using `map()`.
+
+```{webr}
+plot_recurrence <- function(df){
+  ggplot(df) +
+    aes(x=days_to_last_follow_up,
+        y=age_at_diagnosis) +
+    geom_point()
+}
+
+plot_list <- map(df_list, plot_recurrence)
+```
+
+
+## Critical Things to Think about:
+
+- What is the unit in the list?
+- How do I call a function?
+- How do I call extra arguments?
+
+. . .
+
+
+## Variations of `map()`
+
+To be more specific about the output type, you can do this via the `map_*` function, where `*` specifies the output type: `map_lgl()`, `map_chr()`, and `map_dbl()` functions return vectors of logical values, strings, or numbers respectively.
+
+![](https://d33wubrfki0l68.cloudfront.net/eb6730b841e32292d9ff36b33a590e24b6221f43/57192/diagrams/vectors/summary-tree-atomic.png){width="300"}
+
+. . .
+
+```{r}
+map_dbl(my_vector, log)
+```
+
+
+## Case study 3: Iterate over different conditions to analyze a dataframe
+
+Suppose you are working with the `penguins` dataframe:
+
+```{r}
+head(penguins)
+```
+
+. . .
+
+and you want to look at the mean `bill_length_mm` for each of the three species (Adelie, Chinstrap, Gentoo).
+
+## The Process
+
+1. Define what you want to do
+1. Do it once on test data, write function if necessary
+1. Make a list of objects to iterate through
+1. Apply function multiple times on the list elements
+
+
+## Step 1: Define what you want to do
+
+We want to look at the mean `bill_length_mm` for each of the three species (Adelie, Chinstrap, Gentoo).
+
+## Step 2: Do it Once
+
+Adapt the below code into a function. Try it out on the first element of `species_to_analyze()`
+
+```{webr}
+#| exercise: mr_bill
+
+#first iteration
+penguins_subset = filter(penguins, species == "Adelie")
+mean(penguins_subset$bill_length_mm, na.rm = TRUE)
+
+analyze_bill <- function(species_to_analyze){
+  
+  
+}
+
+analyze_bill("Adelie")
+```
+::: {.solution exercise="mr_bill"}
+
+#### Solution
+
+```{webr}
+#| exercise: mr_bill
+#| solution: true
+
+analyze_bill <- function(species_to_analyze){
+  penguins_subset = filter(penguins, species == "Adelie")
+  out <- mean(penguins_subset$bill_length_mm, na.rm = TRUE)
+  return(out)
+}
+
+analyze_bill("Adelie")
+
+```
+:::
+
+
+## Step 3: Make a list
+
+-   Variable we need to loop through: `c("Adelie", "Chinstrap", "Gentoo")`
+
+```{webr}
+species_to_analyze = c("Adelie", "Chinstrap", "Gentoo")
+```
+
+
+
+## Step 4: Apply function on list elements
+
+-   The looping mechanism, and its output: `map_dbl()` outputs (double) numeric vectors.
+
+
+Apply `analyze_bill` to `species_to_analyze`:
+
+```{webr}
+#| exercise: bill_end
+map_dbl(-------, analyze_bill)
+```
+
+::: {.solution exercise="bill_end"}
+
+#### Solution
+
+```{webr}
+#| exercise: bill_end
+#| solution: true
+map_dbl(-------, analyze_bill)
+```
+:::
+
+
+
+## Map family of functions
+
+![](images/purrr_map.png){width="400"}
+
+More info at: https://adv-r.hadley.nz/functionals.html
+
+## For loops, briefly
+
+A `for` loop repeats a chunk of code many times, once for each element of an input vector.
+
+```         
+for (my_element in my_vector) {
+  chunk of code
+}
+```
+
+Most often, the "chunk of code" will make use of `my_element`.
+
+. . .
+
+```{r}
+my_vector = c(1, 3, 5, 7)
+for (my_element in my_vector) {
+  print(my_element)
+}
+```
+
+## Loop through the indicies of a vector
+
+```{r}
+my_vector = c(1, 3, 5, 7)
+seq_along(my_vector)
+```
+
+```{r}
+for(i in seq_along(my_vector)) {
+  print(my_vector[i])
+}
+```
+
+. . .
+
+```{r}
+my_vector = c(1, 3, 5, 7)
+result = rep(NA, length(my_vector))
+
+for(i in seq_along(my_vector)) {
+  result[i] = log(my_vector[i])
+}
+
+result
+```
+
+## 
