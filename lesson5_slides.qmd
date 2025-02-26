@@ -190,7 +190,7 @@ lusc_data <- read_csv("data/tumor/LUSC.csv")
 
 plot_recurrence <- function(df){
   ggplot(df) +
-    aes(x=-------,
+    aes(x= -------,
         y= --------) +
     geom_point()
 }
@@ -208,7 +208,7 @@ plot_recurrence(lusc_data)
 #| solution: true
 plot_recurrence <- function(df){
   ggplot(df) +
-    aes(x=days_to_last_followup,
+    aes(x= days_to_last_followup,
         y= age_at_diagnosis) +
     geom_point()
 }
@@ -259,10 +259,20 @@ To be more specific about the output type, you can do this via the `map_*` funct
 
 ![](https://d33wubrfki0l68.cloudfront.net/eb6730b841e32292d9ff36b33a590e24b6221f43/57192/diagrams/vectors/summary-tree-atomic.png){width="300"}
 
-. . .
+## `map_dbl`
 
-```{r}
+Expects a single `double` return value:
+
+```{webr}
 map_dbl(my_vector, log)
+```
+
+## `map_lgl`
+
+Expects logical output from each element (`TRUE`, `FALSE`):
+
+```{webr}
+map_lgl(penguins, is.numeric)
 ```
 
 
