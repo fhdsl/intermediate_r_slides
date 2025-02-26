@@ -59,6 +59,12 @@ my_vector = c(1, 3, 5, 7)
 result = map(my_vector, log)
 ```
 
+# Questions / Review
+
+`r countdown::countdown(minutes=20)`
+
+# Remember to hit Record in Teams
+
 ## Iterating tasks
 
 Suppose that you want to repeat a chunk of code many times, but changing one variable's value each time you do it: This could be modifying each element of a vector in the same way, or analyzing a dataframe multiple times with different parameters.
