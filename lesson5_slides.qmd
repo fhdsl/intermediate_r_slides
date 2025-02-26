@@ -7,7 +7,7 @@ format:
     scrollable: true
     echo: true
     embed-resources: true
-    footer: <https://bit.ly/intr_wk2>
+    footer: <https://bit.ly/intr_wk5>
     drop:
       engine: webr
       button: true
