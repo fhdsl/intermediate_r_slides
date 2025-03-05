@@ -58,6 +58,11 @@ output-location: fragment
 
 ![](images/dasl_outreach.png)
 
+## Don't Forget the Datathon March 14!
+
+- [Last Quarter Datathon](https://datathon2024.netlify.app/)
+- RSVP here if you haven't already: <https://www.addevent.com/event/DT25070870>
+
 ## Please fill out survey!
 
 Our [class survey](https://docs.google.com/forms/d/e/1FAIpQLSfZuLFrtMWezVqIP8KU86pSpO8Hwx3xuIRri8snWkqxDiFslg/viewform?usp=sharing) makes a huge difference for us.
